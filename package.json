@@ -5,16 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node index"
+    "dev": "ts-node src/main.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ollama": "^0.5.9"
+    "ollama": "^0.5.9",
+    "shelljs": "^0.8.5"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",
+    "@types/shelljs": "^0.8.15",
     "ts-node": "^10.9.2",
     "tslib": "^2.7.0",
     "typescript": "^5.6.3"

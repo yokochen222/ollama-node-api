@@ -1,42 +1,53 @@
 import ollama from 'ollama'
-import type { Tool } from 'ollama'
+import type { Message } from 'ollama'
+import { OpenApp, desc } from './tools/open-apps'
 
+// 可用的工具集函数列表
+const availableFunctions = {
+  OpenApp,
+}
 
-const tools: Tool[] = [
-  {
-    type: 'function',
-    function: {
-      name: 'getCurrentWeather',
-      description: '获取当前天气情况',
-      parameters: {
-        type: '',
-        required: [],
-        properties: {
-          city: {
-            type: 'string',
-            description: "想要了解天气情况的城市名称",
-          }
-        }
-      }
+const main = async (model = 'qwen2.5' ) => {
+
+  const messages: Message[] = [
+    {
+      role: 'user',
+      content: '访问开林集团(https://kailinjt.com)的网页',
+    }
+  ]
+
+  const response = await ollama.chat({
+    model,
+    tools: [desc],
+    messages,
+  })
+
+  messages.push(response.message)
+
+  if (!response.message.tool_calls || response.message.tool_calls.length === 0) {
+    console.log("没有需要匹配本地工具的对话:")
+    console.log(response.message.content)
+    return
+  }
+
+  if (response.message.tool_calls) {
+    for (const tool of response.message.tool_calls) {
+      const functionToCall = availableFunctions[tool.function.name as keyof typeof availableFunctions]
+      const functionResponse = functionToCall(tool.function.arguments)
+      // 将工具函数结果回传到对话上下文
+      messages.push({
+        role: 'tool',
+        content: functionResponse,
+      })
     }
   }
-]
 
-
-const main = () => {
-  ollama.chat({
-    model: 'qwen2.5',
-    tools: tools,
-    messages: [{ role: 'user', content: '在图片中你看到了什么？'}],
-    
-  }).then((res) => {
-    console.log(res)
-    if (res.message.tool_calls) {
-      ollama.embed
-      console.log(res.message.tool_calls[0].function)
-      console.log(res.message.tool_calls[0].function.arguments)
-    }
+  const finalResponse = await ollama.chat({
+    model,
+    messages: messages,
   })
+
+  console.log(finalResponse.message.content)
 }
 
 main()
