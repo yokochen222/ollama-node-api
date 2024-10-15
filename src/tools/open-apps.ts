@@ -43,3 +43,8 @@ export function OpenApp(args: { [key: string]: string }) {
   // return { error: "没有找到应用" }
   return JSON.stringify({ success: "应用已经打开" })
 }
+
+export default {
+  desc,
+  toolFn: OpenApp
+}
