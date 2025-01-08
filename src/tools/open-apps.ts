@@ -4,7 +4,7 @@ export const desc: Tool = {
   type: 'function',
   function: {
     name: 'OpenApp',
-    description: '打开电脑中的应用',
+    description: '打开电脑中的应用，比如浏览器',
     parameters: {
       type: '',
       required: ['name'],
@@ -28,15 +28,15 @@ export function OpenApp(args: { [key: string]: string }) {
   const appName = (args.name) + ''.toLowerCase()
   const url = (args.url) + ''.toLowerCase()
 
-  console.log('获取到工具调用参数', args)
-  console.log('获取到工具调用', appName)
-  console.log('获取到工具调用参数URL', url)
+  // console.log('获取到工具调用参数', args)
+  // console.log('获取到工具调用', appName)
+  // console.log('获取到工具调用参数URL', url)
 
   if (browsers.includes(appName) || url) {
-    shelljs.exec(`open -a "/Applications/Google Chrome.app" "${url}"`, (code, stdout, err) => {
-      console.log('shell 脚本执行代码: ', code)
-      console.log('shell 脚本执行标准输出: ', stdout)
-      console.log('shell 脚本执行错误信息: ', err || '无错误')
+    shelljs.exec(`open -a "/Applications/Google Chrome.app" "http://baidu.com"`, (code, stdout, err) => {
+      // console.log('shell 脚本执行代码: ', code)
+      // console.log('shell 脚本执行标准输出: ', stdout)
+      // console.log('shell 脚本执行错误信息: ', err || '无错误')
     })
   }
 
