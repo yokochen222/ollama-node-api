@@ -1,6 +1,10 @@
-import ollama from 'ollama'
+import { Ollama } from 'ollama'
 import type { Message } from 'ollama'
+
+
 import OpenApps from './tools/open-apps'
+import mqtt from 'mqtt'
+import TTS from './speech'
 // import OnlineSearch from './tools/online-search'
 
 const tools = [
@@ -14,9 +18,12 @@ const availableFunctions = {
   // OnlineSearch: OnlineSearch.toolFn
 }
 
+const ollama = new Ollama({ host: 'http://127.0.0.1:11434',  })
 const messages:Message [] = []
 let response: any
-export const chat = async (question: string, model = 'qwen2.5' ) => {
+export const chat = async (question: string, model = 'qwen2.5', mqtt: mqtt.MqttClient) => {
+
+  // 流式输出打断
   if (response) {
     response.abort()
     response = undefined
@@ -30,6 +37,7 @@ export const chat = async (question: string, model = 'qwen2.5' ) => {
     model,
     tools: tools,
     messages,
+    keep_alive: '23h',
     stream: true
   })
   console.log('AI回答：\r')
@@ -58,6 +66,7 @@ export const chat = async (question: string, model = 'qwen2.5' ) => {
     model,
     stream: true,
     messages: messages,
+    keep_alive: '23h',
   })
   if (response) {
     const assistant = {
@@ -68,6 +77,10 @@ export const chat = async (question: string, model = 'qwen2.5' ) => {
       for await (const message of response) {
         process.stdout.write(`${message.message.content || ''} `)
         assistant.content += message.message.content
+        mqtt.publish('/json/moss_print_2_screen', JSON.stringify({
+          content: message.message.content,
+          llm: true
+        }))
       }
       messages.push(assistant)
       console.log('\n')
