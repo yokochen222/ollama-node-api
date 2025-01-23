@@ -40,7 +40,6 @@ export const chat = async (question: string, model = 'qwen2.5', mqtt: mqtt.MqttC
     keep_alive: '23h',
     stream: true
   })
-  console.log('AI回答：\r')
   if (response) {
     try {
       for await (const message of response) {
@@ -74,6 +73,7 @@ export const chat = async (question: string, model = 'qwen2.5', mqtt: mqtt.MqttC
       content: ''
     }
     try {
+      console.log('AI回答：\r')
       for await (const message of response) {
         process.stdout.write(`${message.message.content || ''} `)
         assistant.content += message.message.content

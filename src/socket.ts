@@ -33,8 +33,9 @@ function processAudioChunk(chunk: Buffer): void {
     // 累积音频数据
     audioDataBuffer = Buffer.concat([audioDataBuffer, audioData]);
     wsclient.send(audioDataBuffer)
+    // wsclient.send(chunk)
 
-    sss(audioDataBuffer);
+    // sss(audioDataBuffer);
     audioDataBuffer = Buffer.alloc(0); // 清空缓存
 }
 
@@ -51,9 +52,10 @@ wsclient.onmessage = async (event) => {
     try {
         const res = JSON.parse(event.data  as string)
         if (res.code === 0) {
-            console.log(res.data)
-            await chat(res.data, 'qwen2.5', client)
+            console.clear()
             console.log('-----------------------')
+            console.log('我：', res.data)
+            await chat(res.data, 'qwen2.5', client)
         }
     } catch(e) {
         console.log(e)
